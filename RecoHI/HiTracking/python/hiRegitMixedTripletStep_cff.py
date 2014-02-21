@@ -48,7 +48,9 @@ hiRegitMixedTripletStepSeedsA = RecoTracker.IterativeTracking.MixedTripletStep_c
 hiRegitMixedTripletStepSeedsA.RegionFactoryPSet                                           = HiTrackingRegionFactoryFromJetsBlock.clone()
 hiRegitMixedTripletStepSeedsA.ClusterCheckPSet.doClusterCheck                             = False # do not check for max number of clusters pixel or strips
 hiRegitMixedTripletStepSeedsA.OrderedHitsFactoryPSet.SeedingLayers = 'hiRegitMixedTripletStepSeedLayersA'
-hiRegitMixedTripletStepSeedsA.RegionFactoryPSet.RegionPSet.ptMin = 1.0
+hiRegitMixedTripletStepSeedsA.RegionFactoryPSet.RegionPSet.ptMin = 0.5 
+hiRegitMixedTripletStepSeedsA.RegionFactoryPSet.RegionPSet.originHalfLength = 2.0
+hiRegitMixedTripletStepSeedsA.RegionFactoryPSet.RegionPSet.originRadius = 1.5
 
 # SEEDING LAYERS B
 hiRegitMixedTripletStepSeedLayersB =  RecoTracker.IterativeTracking.MixedTripletStep_cff.mixedTripletStepSeedLayersB.clone(
@@ -62,7 +64,9 @@ hiRegitMixedTripletStepSeedsB = RecoTracker.IterativeTracking.MixedTripletStep_c
 hiRegitMixedTripletStepSeedsB.RegionFactoryPSet                                           = HiTrackingRegionFactoryFromJetsBlock.clone()
 hiRegitMixedTripletStepSeedsB.ClusterCheckPSet.doClusterCheck                             = False # do not check for max number of clusters pixel or strips
 hiRegitMixedTripletStepSeedsB.OrderedHitsFactoryPSet.SeedingLayers = 'hiRegitMixedTripletStepSeedLayersB'
-hiRegitMixedTripletStepSeedsB.RegionFactoryPSet.RegionPSet.ptMin = 1.0
+hiRegitMixedTripletStepSeedsB.RegionFactoryPSet.RegionPSet.ptMin = 0.7 
+hiRegitMixedTripletStepSeedsB.RegionFactoryPSet.RegionPSet.originHalfLength = 2.0
+hiRegitMixedTripletStepSeedsB.RegionFactoryPSet.RegionPSet.originRadius = 1.5
 
 # combine seeds
 hiRegitMixedTripletStepSeeds = RecoTracker.IterativeTracking.MixedTripletStep_cff.mixedTripletStepSeeds.clone(
