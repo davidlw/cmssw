@@ -13,7 +13,7 @@
 //
 // Original Author:  Brian Drell
 //         Created:  Fri May 18 22:57:40 CEST 2007
-// $Id: V0Fitter.h,v 1.22 2010/06/19 03:24:33 drell Exp $
+// $Id: V0Fitter.h,v 1.24 2010/08/05 22:06:39 wmtan Exp $
 //
 //
 
@@ -27,17 +27,28 @@
 #include "DataFormats/Common/interface/Ref.h"
 
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 #include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
 
+#include "RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h"
+#include "RecoVertex/KinematicFit/interface/KinematicParticleFitter.h"
+#include "RecoVertex/KinematicFit/interface/MassKinematicConstraint.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/KinematicParticle.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicParticle.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/TransientTrackKinematicParticle.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackFromFTSFactory.h"
+
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "MagneticField/VolumeBasedEngine/interface/VolumeBasedMagneticField.h"
 
 #include "DataFormats/Candidate/interface/VertexCompositeCandidate.h"
 #include "DataFormats/RecoCandidate/interface/RecoChargedCandidate.h"
+#include "DataFormats/Math/interface/angle.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
@@ -49,6 +60,8 @@
 #include "Geometry/TrackerGeometryBuilder/interface/GluedGeomDet.h"
 
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHit.h"
+
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include <string>
 #include <fstream>
@@ -63,11 +76,15 @@ class V0Fitter {
   // Switching to L. Lista's reco::Candidate infrastructure for V0 storage
   const reco::VertexCompositeCandidateCollection& getKshorts() const;
   const reco::VertexCompositeCandidateCollection& getLambdas() const;
+  const reco::VertexCompositeCandidateCollection& getXis() const;
+  const reco::VertexCompositeCandidateCollection& getOmegas() const;
 
  private:
   // STL vector of VertexCompositeCandidate that will be filled with VertexCompositeCandidates by fitAll()
   reco::VertexCompositeCandidateCollection theKshorts;
   reco::VertexCompositeCandidateCollection theLambdas;
+  reco::VertexCompositeCandidateCollection theXis;
+  reco::VertexCompositeCandidateCollection theOmegas;
 
   // Tracker geometry for discerning hit positions
   const TrackerGeometry* trackerGeom;
@@ -75,27 +92,40 @@ class V0Fitter {
   const MagneticField* magField;
 
   edm::InputTag recoAlg;
+  edm::InputTag vtxAlg;
   bool useRefTrax;
   bool storeRefTrax;
   bool doKshorts;
   bool doLambdas;
+  bool doXis;
+  bool doOmegas;
 
   /*bool doPostFitCuts;
     bool doTkQualCuts;*/
 
   // Cuts
-  double chi2Cut;
+  double tkDCACut;
   double tkChi2Cut;
-  int tkNhitsCut;
+  int    tkNhitsCut;
+  double chi2Cut;
   double rVtxCut;
-  double vtxSigCut;
-  double vtxSigCut3D;
+  double rVtxSigCut;
+  double lVtxCut;
+  double lVtxSigCut;
   double collinCut;
+  double xiChi2Cut;
+  double xiRVtxCut;
+  double xiRVtxSigCut;
+  double xiLVtxCut;
+  double xiLVtxSigCut;
+  double xiCollinCut;
   double kShortMassCut;
   double lambdaMassCut;
-  double impactParameterSigCut;
+  double xiMassCut;
+  double omegaMassCut;
+  double dauTransImpactSigCut;
+  double dauLongImpactSigCut;
   double mPiPiCut;
-  double tkDCACut;
   double innerHitPosCut;
 
   std::vector<reco::TrackBase::TrackQuality> qualities;
