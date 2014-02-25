@@ -20,7 +20,7 @@ process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
 # '/store/himc/HiFall13/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/GEN-SIM/STARTHI53_V28-v2/00000/00699AE5-5A5E-E311-83B4-008CFA007B98.root'
 #'file:/net/hisrv0001/home/davidlw/scratch1/RECO_MC_53x.root'
-       '/store/user/davidlw/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/RECO_v1/0e6ab43111ff2b7e6299139d8f86b661/reco_DIGI_L1_DIGI2RAW_RAW2DIGI_L1Reco_RECO_100_1_KCp.root'
+       'root://xrootd.cmsaf.mit.edu//store/user/davidlw/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/RECO_v1/0e6ab43111ff2b7e6299139d8f86b661/reco_DIGI_L1_DIGI2RAW_RAW2DIGI_L1Reco_RECO_100_1_KCp.root'
     ))
 
 process.Timing = cms.Service("Timing")
