@@ -33,27 +33,66 @@ hiPixelPairSeedLayers = RecoTracker.TkSeedingLayers.PixelLayerPairs_cfi.pixellay
             )
 
 # SEEDS
+#import RecoTracker.TkSeedGenerator.GlobalSeedsFromPairsWithVertices_cff
+#hiPixelPairSeeds = RecoTracker.TkSeedGenerator.GlobalSeedsFromPairsWithVertices_cff.globalSeedsFromPairsWithVertices.clone()
+#hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.VertexCollection=cms.InputTag("hiSelectedVertex")
+#hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.ptMin = 4.0
+#hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.originRadius = 0.005
+#hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.nSigmaZ = 4.0
+## sigmaZVertex is only used when usedFixedError is True -Matt
+#hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.sigmaZVertex = 4.0
+#hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.useFixedError = cms.bool(False)
+#hiPixelPairSeeds.OrderedHitsFactoryPSet.SeedingLayers = cms.string('hiPixelPairSeedLayers')
+#hiPixelPairSeeds.OrderedHitsFactoryPSet.maxElement = 5000000
+#hiPixelPairSeeds.ClusterCheckPSet.MaxNumberOfPixelClusters = 5000000
+#hiPixelPairSeeds.ClusterCheckPSet.MaxNumberOfCosmicClusters = 50000000
+# SEEDS
 import RecoTracker.TkSeedGenerator.GlobalSeedsFromPairsWithVertices_cff
-hiPixelPairSeeds = RecoTracker.TkSeedGenerator.GlobalSeedsFromPairsWithVertices_cff.globalSeedsFromPairsWithVertices.clone()
-hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.VertexCollection=cms.InputTag("hiSelectedVertex")
-hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.ptMin = 4.0
-hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.originRadius = 0.005
-hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.nSigmaZ = 4.0
-# sigmaZVertex is only used when usedFixedError is True -Matt
-hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.sigmaZVertex = 4.0
-hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.useFixedError = cms.bool(False)
+from RecoTracker.TkTrackingRegions.GlobalTrackingRegionFromBeamSpot_cfi import RegionPsetFomBeamSpotBlock
+hiPixelPairSeeds = RecoTracker.TkSeedGenerator.GlobalSeedsFromPairsWithVertices_cff.globalSeedsFromPairsWithVertices.clone(
+    RegionFactoryPSet = RegionPsetFomBeamSpotBlock.clone(
+#    ComponentName = cms.string('GlobalRegionProducerFromBeamSpot'),
+#    RegionPSet = RegionPsetFomBeamSpotBlock.RegionPSet.clone(
+#    ptMin = 4.0,
+#    originRadius = 0.005,
+#    nSigmaZ = 4.0
+#    )
+      ComponentName = cms.string('GlobalTrackingRegionWithVerticesProducer'),
+      RegionPSet = cms.PSet(
+        precise = cms.bool(True),
+        beamSpot = cms.InputTag("offlineBeamSpot"),
+        useFixedError = cms.bool(False),
+        nSigmaZ = cms.double(4.0),
+        sigmaZVertex = cms.double(4.0),
+        fixedError = cms.double(0.2),
+        VertexCollection = cms.InputTag("hiSelectedVertex"),
+        ptMin = cms.double(100),
+        useFoundVertices = cms.bool(True),
+        originRadius = cms.double(0.015)
+      )
+    )
+)
+
 hiPixelPairSeeds.OrderedHitsFactoryPSet.SeedingLayers = cms.string('hiPixelPairSeedLayers')
 hiPixelPairSeeds.OrderedHitsFactoryPSet.maxElement = 5000000
 hiPixelPairSeeds.ClusterCheckPSet.MaxNumberOfPixelClusters = 5000000
 hiPixelPairSeeds.ClusterCheckPSet.MaxNumberOfCosmicClusters = 50000000
 
-hiPixelPairSeeds.SeedComparitorPSet = cms.PSet(
-    ComponentName = cms.string('PixelClusterShapeSeedComparitor'),
-    FilterAtHelixStage = cms.bool(True),
-    FilterPixelHits = cms.bool(True),
-    FilterStripHits = cms.bool(False),
-    ClusterShapeHitFilterName = cms.string('ClusterShapeHitFilter')
-    )
+# Wei's modification
+#hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.originRadius = 0.015
+#hiPixelPairSeeds.RegionFactoryPSet.RegionPSet.ptMin = 2.0
+
+#hiPixelPairSeeds.SeedComparitorPSet = cms.PSet(
+#    ComponentName = cms.string('PixelClusterShapeSeedComparitor'),
+#    ComponentName = cms.string('LowPtClusterShapeSeedComparitor'),
+#    FilterAtHelixStage = cms.bool(True),
+#    FilterPixelHits = cms.bool(True),
+#    FilterStripHits = cms.bool(False),
+#    ClusterShapeHitFilterName = cms.string('ClusterShapeHitFilter')
+#    )
+
+#from RecoPixelVertexing.PixelLowPtUtilities.ClusterShapeHitFilterESProducer_cfi import *
+#hiPixelPairSeeds.OrderedHitsFactoryPSet.GeneratorPSet.SeedComparitorPSet.ComponentName = 'LowPtClusterShapeSeedComparitor'
 
 # QUALITY CUTS DURING TRACK BUILDING
 import TrackingTools.TrajectoryFiltering.TrajectoryFilterESProducer_cfi
@@ -62,7 +101,7 @@ hiPixelPairTrajectoryFilter = TrackingTools.TrajectoryFiltering.TrajectoryFilter
     filterPset = TrackingTools.TrajectoryFiltering.TrajectoryFilterESProducer_cfi.trajectoryFilterESProducer.filterPset.clone(
     #maxLostHits = 0,
     minimumNumberOfHits = 6,
-    minPt = 1.0
+    minPt = 0.9
     )
     )
 

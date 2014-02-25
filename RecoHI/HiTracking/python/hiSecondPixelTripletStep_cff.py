@@ -37,14 +37,31 @@ import RecoTracker.TkSeedGenerator.GlobalSeedsFromTriplets_cff
 from RecoTracker.TkTrackingRegions.GlobalTrackingRegionFromBeamSpot_cfi import RegionPsetFomBeamSpotBlock
 hiSecondPixelTripletSeeds = RecoTracker.TkSeedGenerator.GlobalSeedsFromTriplets_cff.globalSeedsFromTriplets.clone(
     RegionFactoryPSet = RegionPsetFomBeamSpotBlock.clone(
-    ComponentName = cms.string('GlobalRegionProducerFromBeamSpot'),
-    RegionPSet = RegionPsetFomBeamSpotBlock.RegionPSet.clone(
-    ptMin = 4.0,
-    originRadius = 0.005,
-    nSigmaZ = 4.0
-    )
+#    ComponentName = cms.string('GlobalRegionProducerFromBeamSpot'),
+#    RegionPSet = RegionPsetFomBeamSpotBlock.RegionPSet.clone(
+#    ptMin = 4.0,
+#    originRadius = 0.005,
+#    nSigmaZ = 4.0
+#    )
+      ComponentName = cms.string('GlobalTrackingRegionWithVerticesProducer'),
+      RegionPSet = cms.PSet(
+        precise = cms.bool(True),
+        beamSpot = cms.InputTag("offlineBeamSpot"),
+        useFixedError = cms.bool(False),
+        nSigmaZ = cms.double(4.0),
+        sigmaZVertex = cms.double(4.0),
+        fixedError = cms.double(0.2),
+        VertexCollection = cms.InputTag("hiSelectedVertex"),
+        ptMin = cms.double(0.4),
+        useFoundVertices = cms.bool(True),
+        originRadius = cms.double(0.02)
+      )
     )
 )
+
+#Wei's modification
+#hiSecondPixelTripletSeeds.RegionFactoryPSet.RegionPSet.originRadius = 0.02
+#hiSecondPixelTripletSeeds.RegionFactoryPSet.RegionPSet.ptMin = 2.0
 
 hiSecondPixelTripletSeeds.OrderedHitsFactoryPSet.SeedingLayers = 'hiSecondPixelTripletSeedLayers'
 hiSecondPixelTripletSeeds.OrderedHitsFactoryPSet.GeneratorPSet.maxElement = 5000000
@@ -62,7 +79,7 @@ hiSecondPixelTripletTrajectoryFilter = TrackingTools.TrajectoryFiltering.Traject
     filterPset = TrackingTools.TrajectoryFiltering.TrajectoryFilterESProducer_cfi.trajectoryFilterESProducer.filterPset.clone(
     maxLostHits = 1,
     minimumNumberOfHits = 6,
-    minPt = 1.0
+    minPt = 0.4
     )
     )
 

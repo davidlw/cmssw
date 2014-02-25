@@ -4,11 +4,14 @@ generalV0Candidates = cms.EDProducer("V0Producer",
                                      
     # InputTag that tells which TrackCollection to use for vertexing
     trackRecoAlgorithm = cms.InputTag('generalTracks'),
+    vertexRecoAlgorithm = cms.InputTag('offlinePrimaryVertices'),
 
     # These bools decide whether or not to reconstruct
     #  specific V0 particles
     selectKshorts = cms.bool(True),
     selectLambdas = cms.bool(True),
+    selectXis = cms.bool(True),
+    selectOmegas = cms.bool(True),
 
     # Recommend leaving this one as is.
     vertexFitter = cms.InputTag('KalmanVertexFitter'),
@@ -33,7 +36,8 @@ generalV0Candidates = cms.EDProducer("V0Producer",
     #   Number of valid hits on track >=
     tkNhitsCut = cms.int32(6),
     #   Track impact parameter significance >
-    impactParameterSigCut = cms.double(2.),
+    dauTransImpactSigCut = cms.double(2.),
+    dauLongImpactSigCut = cms.double(2.),
     # We calculate the PCA of the tracks quickly in RPhi, extrapolating
     # the z position as well, before vertexing.  Used in the following 2 cuts:
     #   m_pipi calculated at PCA of tracks <
@@ -46,7 +50,7 @@ generalV0Candidates = cms.EDProducer("V0Producer",
     vtxChi2Cut = cms.double(7.0),
     #   Lambda collinearity cut
     #   (UNUSED)
-    collinearityCut = cms.double(0.02),
+    collinearityCut = cms.double(-2.0),
     #   Vertex radius cut >
     #   (UNUSED)
     rVtxCut = cms.double(0.0),
@@ -58,10 +62,21 @@ generalV0Candidates = cms.EDProducer("V0Producer",
     #   3D vertex significance using primary vertex
     #   (UNUSED)
     vtxSignificance3DCut = cms.double(0.0),
+    
+    # cuts for Xi 
+    xiVtxChi2Cut = cms.double(7.0),
+    xiCollinearityCut = cms.double(-2.0),
+    xiRVtxCut = cms.double(0.0),
+    xiLVtxCut = cms.double(0.0),
+    xiVtxSignificance2DCut = cms.double(15.0),
+    xiVtxSignificance3DCut = cms.double(0.0),
+
     #   V0 mass window, Candidate mass must be within these values of
     #     the PDG mass to be stored in the collection
     kShortMassCut = cms.double(0.07),
     lambdaMassCut = cms.double(0.05),
+    xiMassCut = cms.double(0.10),
+    omegaMassCut = cms.double(0.10),
     #   Mass window cut using normalized mass (mass / massError)
     #   (UNUSED)
     kShortNormalizedMassCut = cms.double(0.0),
