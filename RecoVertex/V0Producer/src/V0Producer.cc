@@ -13,7 +13,7 @@
 //
 // Original Author:  Brian Drell
 //         Created:  Fri May 18 22:57:40 CEST 2007
-// $Id: V0Producer.cc,v 1.11 2009/12/18 20:45:10 wmtan Exp $
+// $Id: V0Producer.cc,v 1.12 2010/02/20 21:02:02 wmtan Exp $
 //
 //
 
@@ -35,6 +35,8 @@ V0Producer::V0Producer(const edm::ParameterSet& iConfig) :
   // Trying this with Candidates instead of the simple reco::Vertex
   produces< reco::VertexCompositeCandidateCollection >("Kshort");
   produces< reco::VertexCompositeCandidateCollection >("Lambda");
+  produces< reco::VertexCompositeCandidateCollection >("Xi");
+  produces< reco::VertexCompositeCandidateCollection >("Omega");
   //produces< reco::VertexCompositeCandidateCollection >("LambdaBar");
 
 }
@@ -66,17 +68,32 @@ void V0Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      lambdaCandidates( new reco::VertexCompositeCandidateCollection );
    lambdaCandidates->reserve( theVees.getLambdas().size() );
 
+   std::auto_ptr< reco::VertexCompositeCandidateCollection >
+     xiCandidates( new reco::VertexCompositeCandidateCollection );
+   xiCandidates->reserve( theVees.getXis().size() );
+
+   std::auto_ptr< reco::VertexCompositeCandidateCollection >
+     omegaCandidates( new reco::VertexCompositeCandidateCollection );
+   omegaCandidates->reserve( theVees.getOmegas().size() );
+
    std::copy( theVees.getKshorts().begin(),
 	      theVees.getKshorts().end(),
 	      std::back_inserter(*kShortCandidates) );
    std::copy( theVees.getLambdas().begin(),
 	      theVees.getLambdas().end(),
 	      std::back_inserter(*lambdaCandidates) );
+   std::copy( theVees.getXis().begin(),
+              theVees.getXis().end(),
+              std::back_inserter(*xiCandidates) );
+   std::copy( theVees.getOmegas().begin(),
+              theVees.getOmegas().end(),
+              std::back_inserter(*omegaCandidates) );
 
    // Write the collections to the Event
    iEvent.put( kShortCandidates, std::string("Kshort") );
    iEvent.put( lambdaCandidates, std::string("Lambda") );
-
+   iEvent.put( xiCandidates, std::string("Xi") );
+   iEvent.put( omegaCandidates, std::string("Omega") );
 }
 
 

@@ -15,8 +15,12 @@
 <use   name="MagneticField/Records"/>
 <use   name="MagneticField/VolumeBasedEngine"/>
 <use   name="CommonTools/CandUtils"/>
+<use   name="CommonTools/UtilAlgos"/>
 <use   name="RecoVertex/AdaptiveVertexFit"/>
 <use   name="RecoVertex/KalmanVertexFit"/>
 <use   name="RecoVertex/VertexPrimitives"/>
+<use   name="RecoVertex/KinematicFit"/>
+<use   name="RecoVertex/KinematicFitPrimitives"/>
 <use   name="TrackingTools/TransientTrack"/>
 <use   name="TrackingTools/IPTools"/>
+<use   name="TrackingTools/Records"/>
