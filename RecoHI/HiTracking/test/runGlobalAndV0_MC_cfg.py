@@ -20,14 +20,14 @@ process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
 # '/store/himc/HiFall13/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/GEN-SIM/STARTHI53_V28-v2/00000/00699AE5-5A5E-E311-83B4-008CFA007B98.root'
 #'file:/net/hisrv0001/home/davidlw/scratch1/RECO_MC_53x.root'
-       'root://xrootd.cmsaf.mit.edu//store/user/davidlw/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/RECO_v1/0e6ab43111ff2b7e6299139d8f86b661/reco_DIGI_L1_DIGI2RAW_RAW2DIGI_L1Reco_RECO_100_1_KCp.root'
+       'root://xrootd1.cmsaf.mit.edu//store/user/davidlw/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/RECO_v1/0e6ab43111ff2b7e6299139d8f86b661/reco_DIGI_L1_DIGI2RAW_RAW2DIGI_L1Reco_RECO_100_1_KCp.root'
     ))
 
 process.Timing = cms.Service("Timing")
 
 # Number of events we want to process, -1 = all events
 process.maxEvents = cms.untracked.PSet(
-            input = cms.untracked.int32(100))
+            input = cms.untracked.int32(82))
 
 
 #####################################################################################
@@ -76,7 +76,7 @@ process.HeavyIonGlobalParameters = cms.PSet(
 
 process.load("RecoHI.HiCentralityAlgos.CentralityFilter_cfi")
 #process.centralityFilter.selectedBins = [4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]
-process.centralityFilter.selectedBins = [8,9,10,11,12,13,14,15]
+process.centralityFilter.selectedBins = [29,30,31,32,33,34,35,36,37,38,39,40]
 
 #process.eventFilter = cms.Sequence (process.collisionEventSelection * process.hltHIMinBias * process.centralityFilter)
 process.eventFilter = cms.Sequence ( process.centralityFilter )
@@ -109,23 +109,23 @@ process.load("RiceHIG.V0Analysis.v0validator_cff")
 process.v0ValidatorHI.kShortCollection = cms.InputTag('selectV0CandidatesNewkshort:Kshort')
 process.v0ValidatorHI.lambdaCollection = cms.InputTag('selectV0CandidatesNewlambda:Lambda')
 process.v0ValidatorHI.vertexCollection = cms.InputTag('hiSelectedVertex')
-#process.v0Validator.isMatchByHitsOrChi2 = cms.bool(False)
-#process.TrackAssociatorByHits.Cut_RecoToSim = cms.double(0.5)
+#process.v0ValidatorHI.isMatchByHitsOrChi2 = cms.bool(True)
+process.TrackAssociatorByHits.Cut_RecoToSim = cms.double(0.5)
 
 process.selectV0CandidatesNewlambda.v0CollName = cms.string("generalV0CandidatesHI")
 process.selectV0CandidatesNewkshort.v0CollName = cms.string("generalV0CandidatesHI")
 process.selectV0CandidatesNewlambda.vertexCollName = cms.InputTag("hiSelectedVertex")
 process.selectV0CandidatesNewkshort.vertexCollName = cms.InputTag("hiSelectedVertex")
-process.selectV0CandidatesNewkshort.cosThetaCut = cms.double(0.999)
-process.selectV0CandidatesNewkshort.decayLSigCut = cms.double(5.0)
-process.selectV0CandidatesNewkshort.misIDMassCut   = cms.double(0.010)
+process.selectV0CandidatesNewkshort.cosThetaCut = cms.double(0.99)
+process.selectV0CandidatesNewkshort.decayLSigCut = cms.double(3.0)
+process.selectV0CandidatesNewkshort.misIDMassCut   = cms.double(0.015)
 process.selectV0CandidatesNewkshort.misIDMassCutEE = cms.double(0.015)
-process.selectV0CandidatesNewlambda.cosThetaCut = cms.double(0.999)
-process.selectV0CandidatesNewlambda.decayLSigCut = cms.double(5.0)
-process.selectV0CandidatesNewlambda.misIDMassCut   = cms.double(0.020)
+process.selectV0CandidatesNewlambda.cosThetaCut = cms.double(0.99)
+process.selectV0CandidatesNewlambda.decayLSigCut = cms.double(3.0)
+process.selectV0CandidatesNewlambda.misIDMassCut   = cms.double(0.015)
 process.selectV0CandidatesNewlambda.misIDMassCutEE = cms.double(0.015)
 
-process.v0validation = cms.Sequence(process.generalV0CandidatesHI*process.selectV0CandidatesNewlambda*process.selectV0CandidatesNewkshort*process.v0ValidatorHI)
+process.v0validation = cms.Sequence(process.selectV0CandidatesNewlambda*process.selectV0CandidatesNewkshort*process.v0ValidatorHI)
 
 #process.ana = cms.EDAnalyzer("V0algo",
 #)
@@ -164,15 +164,15 @@ else:
 
 #iteerative tracking
 process.load("RecoHI.HiTracking.hiIterTracking_cff")
-#process.hiDetachedTripletStepSeeds.RegionFactoryPSet.RegionPSet.ptMin = 0.3
-#process.hiDetachedTripletStepSeeds.RegionFactoryPSet.RegionPSet.originRadius = 1.5
-#process.hiDetachedTripletStepSeeds.RegionFactoryPSet.RegionPSet.fixedError = 1.5
-#process.hiMixedTripletStepSeedsA.RegionFactoryPSet.RegionPSet.ptMin = 0.3
-#process.hiMixedTripletStepSeedsA.RegionFactoryPSet.RegionPSet.originRadius = 1.5
-#process.hiMixedTripletStepSeedsA.RegionFactoryPSet.RegionPSet.fixedError = 1.5
-#process.hiMixedTripletStepSeedsB.RegionFactoryPSet.RegionPSet.ptMin = 0.3
-#process.hiMixedTripletStepSeedsB.RegionFactoryPSet.RegionPSet.originRadius = 1.5
-#process.hiMixedTripletStepSeedsB.RegionFactoryPSet.RegionPSet.fixedError = 1.5
+process.hiDetachedTripletStepSeeds.RegionFactoryPSet.RegionPSet.ptMin = 0.2
+process.hiDetachedTripletStepSeeds.RegionFactoryPSet.RegionPSet.originRadius = 1.5
+process.hiDetachedTripletStepSeeds.RegionFactoryPSet.RegionPSet.fixedError = 5 
+process.hiMixedTripletStepSeedsA.RegionFactoryPSet.RegionPSet.ptMin = 0.2
+process.hiMixedTripletStepSeedsA.RegionFactoryPSet.RegionPSet.originRadius = 1.5
+process.hiMixedTripletStepSeedsA.RegionFactoryPSet.RegionPSet.fixedError = 5
+process.hiMixedTripletStepSeedsB.RegionFactoryPSet.RegionPSet.ptMin = 0.4
+process.hiMixedTripletStepSeedsB.RegionFactoryPSet.RegionPSet.originRadius = 1.5
+process.hiMixedTripletStepSeedsB.RegionFactoryPSet.RegionPSet.fixedError = 5
 
 if doLargeD0:
     process.heavyIonTracking *= process.hiFullIterTracking
@@ -240,4 +240,4 @@ process.RECOoutput.outputCommands.extend(cms.untracked.vstring('keep *_hiGeneral
 process.RECOoutput.outputCommands.extend(cms.untracked.vstring('keep *_hiSelectedVertex_*_*'))
 process.RECOoutput.outputCommands.extend(cms.untracked.vstring('keep *_*V0*_*_*'))
 
-process.output = cms.EndPath(process.RECOoutput)
+#process.output = cms.EndPath(process.RECOoutput)
