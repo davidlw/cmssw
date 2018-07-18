@@ -31,7 +31,7 @@ import FWCore.ParameterSet.Config as cms
 # to "True". In this case the SOI configuration is ignored, and the energy
 # is accumulated using all time slices in the data frame.
 #
-zdcqie10reco = cms.EDProducer("ZDCQIE10Reconstructor",
+zdcRecHits = cms.EDProducer("ZDCQIE10Reconstructor",
     digiLabel = cms.InputTag("hcalDigis","ZDC"),
     dropZSmarkedPassed = cms.bool(False),
     tsFromDB = cms.bool(False),

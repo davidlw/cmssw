@@ -92,16 +92,11 @@ ZDCQIE10Reconstructor::ZDCQIE10Reconstructor(const edm::ParameterSet& conf)
       tsFromDB_(conf.getParameter<bool>("tsFromDB")),
       reco_(conf.getParameter<bool>("sumAllTimeSlices"))
 {
-std::cout<<"initial 1"<<std::endl;
-
     // Describe consumed data
     tok_hfQIE10_ = consumes<QIE10DigiCollection>(inputLabel_);
 
-std::cout<<"initial 2"<<std::endl;
-
     // Register the product
     produces<HFPreRecHitCollection>();
-std::cout<<"initial 3"<<std::endl;
 }
 
 
@@ -159,8 +154,6 @@ ZDCQIE10Reconstructor::fillInfos(const edm::Event& e, const edm::EventSetup& eve
     // Clear the collection we want to fill in this method
     qie10Infos_.clear();
 
-std::cout<<"in fillinfos: get here 1"<<std::endl;
-
     // Get the Hcal topology if needed
     ESHandle<HcalTopology> htopo;
     if (tsFromDB_)
@@ -169,13 +162,9 @@ std::cout<<"in fillinfos: get here 1"<<std::endl;
         paramTS_->setTopo(htopo.product());
     }
 
-std::cout<<"in fillinfos: get here 2"<<std::endl;
-
     // Get the calibrations
     ESHandle<HcalDbService> conditions;
     eventSetup.get<HcalDbRecord>().get(conditions);
-
-std::cout<<"in fillinfos: get here 3"<<std::endl;
 
     // Get the input collection
     Handle<QIE10DigiCollection> digi;
@@ -196,8 +185,8 @@ std::cout<<"in fillinfos: get here 3"<<std::endl;
             // Protection against calibration channels which are not
             // in the database but can still come in the QIE10DataFrame
             // in the laser calibs, etc.
-//            if (cell.subdet() != HcalSubdetector::HcalForward)
-//                continue;
+            if (cell.section() == 4)
+                continue;
 
             // Check zero suppression
             if (dropZSmarkedPassed_)
@@ -233,8 +222,6 @@ std::cout<<"in fillinfos: get here 3"<<std::endl;
 void
 ZDCQIE10Reconstructor::beginRun(const edm::Run& r, const edm::EventSetup& es)
 {
-std::cout<<"being run 1"<<std::endl;
-
     if (tsFromDB_)
     {
         edm::ESHandle<HcalRecoParams> p;
@@ -248,20 +235,15 @@ void
 ZDCQIE10Reconstructor::produce(edm::Event& e, const edm::EventSetup& eventSetup)
 {
     // Process the input data
-std::cout<<"get here 0"<<std::endl;
 
     fillInfos(e, eventSetup);
-std::cout<<"get here 1"<<std::endl;
+
     // Create a new output collection
     std::unique_ptr<HFPreRecHitCollection> out(std::make_unique<HFPreRecHitCollection>());
 
-std::cout<<"get here 2"<<std::endl;
-
     // Fill the output collection
     const unsigned pmtCount = sortDataByPmt();
-
-std::cout<<"get here 3: pmtCount="<<pmtCount<<std::endl;
-
+std::cout<<"pmtCount="<<pmtCount<<std::endl;
     if (pmtCount)
     {
         out->reserve(pmtCount);
@@ -282,7 +264,7 @@ std::cout<<"get here 3: pmtCount="<<pmtCount<<std::endl;
                     previousBaseId = baseId;
                 }
             }
-
+std::cout<<"nFound="<<nFound<<std::endl;
             if (appendData)
             {
                 // If we have found more than two QIE10 with the same base id,

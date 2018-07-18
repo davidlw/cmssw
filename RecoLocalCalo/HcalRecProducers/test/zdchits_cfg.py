@@ -18,7 +18,8 @@ runNumber = sys.argv[2]
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         'file:/afs/cern.ch/user/q/qwang/work/public/ZDC2018/example/HFanalysis_'+runNumber+'.root'
-    )
+    ),
+    labelRawDataLikeMC = cms.untracked.bool(False)
 )
 
 process.options = cms.untracked.PSet(
@@ -47,5 +48,5 @@ process.zdcdigi = cms.EDProducer('QWZDC2018Producer',
 
 process.load("RecoLocalCalo.HcalRecProducers.zdcqie10reco_cfi")
 
-process.p = cms.Path( process.zdcqie10reco )
+process.p = cms.Path( process.zdcRecHits )
 process.outpath = cms.EndPath(process.output)
