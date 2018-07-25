@@ -30,10 +30,6 @@ ZDCQIE10Info ZDCQIE10RecAlgo::reconstruct(const QIE10DataFrame& digi,
     // This branch is intended for use with cosmic runs
     double charge = 0.0, energy = 0.0;
     ZDCQIE10Info::raw_type raw[ZDCQIE10Info::N_RAW_MAX];
-
-    // check saturation
-    double correctSaturation[2] = {1.0,1.0};
-    if(cs[tsToStart] == 127) correctSaturation[0] = satCorrFactor;
 /*
     for (unsigned int ts=0; ts<ZDCQIE10Info::N_RAW_MAX; ++ts)
     {
@@ -42,11 +38,12 @@ ZDCQIE10Info ZDCQIE10RecAlgo::reconstruct(const QIE10DataFrame& digi,
 std::cout<<ts<<" "<<cs[ts]<<" "<<capid<<" "<<calib.respcorrgain(capid)<<" "<<calib.pedestal(capid)<<std::endl;
     }
 */
-    for (int ts=tsToStart-1; ts<tsToStart+1; ++ts)
+    for (int ts=tsToStart; ts<=tsToStart-1; --ts)
     {
       const QIE10DataFrame::Sample s(digi[ts]);
       const int capid = s.capid();
-      const float q = cs[ts]*correctSaturation[ts-tsToStart+1] - calib.pedestal(capid);
+      float q = cs[ts] - calib.pedestal(capid);
+      if(ts==(tsToStart-1) && cs[ts] == 127) q = cs[ts+1]*satCorrFactor-calib.pedestal(capid);
       charge += q;
       energy += q*calib.respcorrgain(capid);
 
