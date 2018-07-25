@@ -10,16 +10,16 @@ class HcalCalibrations;
 class ZDCQIE10RecAlgo
 {
 public:
-    inline explicit ZDCQIE10RecAlgo(const bool sumAllTS) : sumAllTS_(sumAllTS) {}
+    inline explicit ZDCQIE10RecAlgo() {}
 
     inline ~ZDCQIE10RecAlgo() {}
 
     ZDCQIE10Info reconstruct(const QIE10DataFrame& digi,
-                            int tsToUse,
+                            int tsToStart,
+                            double satCorrFactor,
                             const HcalCoder& coder,
                             const HcalCalibrations& calibs) const;
 private:
-    bool sumAllTS_;
 };
 
 #endif // RecoLocalCalo_HcalRecAlgos_ZDCQIE10RecAlgo_h_

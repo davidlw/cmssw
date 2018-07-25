@@ -23,11 +23,9 @@ public:
 
     ZDCQIE10Info();
 
-    // Argument "soi" provides the index of the sample of interest
-    // in the "rawData" array
     ZDCQIE10Info(const HcalDetId& id, float charge, float energy,
                 float timeRising, float timeFalling,
-                const raw_type* rawData, unsigned nData, unsigned soi);
+                const raw_type* rawData);
 
     inline HcalDetId id() const {return id_;}
 
@@ -35,19 +33,8 @@ public:
     inline float energy() const {return energy_;}
     inline float timeRising() const {return timeRising_;}
     inline float timeFalling() const {return timeFalling_;}
-    inline unsigned nRaw() const {return nRaw_;}
-    inline unsigned soi() const {return soi_;}
-    inline raw_type getRaw(const unsigned which) const
-       {return which >= nRaw_ ? INVALID_RAW : raw_[which];}
 
-    // Check whether the "ok" flag is set in the dataframe.
-    //
-    // If "checkAllTimeSlices" is "true" or if the raw data
-    // does not contain the "sample of interest" time slice,
-    // we are going to check all time slices. Otherwise only
-    // the "sample of interest" time slice is checked.
-    //
-    bool isDataframeOK(bool checkAllTimeSlices = false) const;
+    bool isDataframeOK() const;
 
 private:
     HcalDetId id_;
@@ -57,8 +44,6 @@ private:
     float timeRising_;
     float timeFalling_;
     raw_type raw_[N_RAW_MAX];
-    uint8_t nRaw_;
-    uint8_t soi_;
 };
 
 #endif // DATAFORMATS_HCALRECHIT_ZDCQIE10INFO_H

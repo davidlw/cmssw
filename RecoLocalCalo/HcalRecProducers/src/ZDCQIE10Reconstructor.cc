@@ -61,8 +61,8 @@ private:
 
     // Module configuration parameters
     edm::InputTag inputLabel_;
-    int forceSOI_;
-    int soiShift_;
+    int tsToStart_;
+    double satCorrFactor_;
     bool dropZSmarkedPassed_;
     bool tsFromDB_;
 
@@ -85,11 +85,11 @@ private:
 //
 ZDCQIE10Reconstructor::ZDCQIE10Reconstructor(const edm::ParameterSet& conf)
     : inputLabel_(conf.getParameter<edm::InputTag>("digiLabel")),
-      forceSOI_(conf.getParameter<int>("forceSOI")),
-      soiShift_(conf.getParameter<int>("soiShift")),
+      tsToStart_(conf.getParameter<int>("tsToStart")),
+      satCorrFactor_(conf.getParameter<double>("satCorrFactor")),
       dropZSmarkedPassed_(conf.getParameter<bool>("dropZSmarkedPassed")),
       tsFromDB_(conf.getParameter<bool>("tsFromDB")),
-      reco_(conf.getParameter<bool>("sumAllTimeSlices"))
+      reco_()
 {
     // Describe consumed data
     tok_zdcQIE10_ = consumes<QIE10DigiCollection>(inputLabel_);
@@ -197,21 +197,9 @@ ZDCQIE10Reconstructor::fillInfos(const edm::Event& e, const edm::EventSetup& eve
             const HcalQIEShape* shape = conditions->getHcalShape(channelCoder);
             const HcalCoderDb coder(*channelCoder, *shape);
 
-            int tsToUse = forceSOI_;
-            if (tsToUse < 0)
-            {
-                if (tsFromDB_)
-                {
-                    const HcalRecoParam* param_ts = paramTS_->getValues(cell.rawId());
-                    tsToUse = param_ts->firstSample();
-                }
-                else
-                    // Get the "sample of interest" from the data frame itself
-                    tsToUse = frame.presamples();
-            }
-
+            int tsToStart = tsToStart_;
             // Reconstruct the charge, energy, etc
-            const ZDCQIE10Info& info = reco_.reconstruct(frame, tsToUse+soiShift_, coder, calibrations);
+            const ZDCQIE10Info& info = reco_.reconstruct(frame, tsToStart, satCorrFactor_, coder, calibrations);
             if (info.id().rawId())
                 qie10Infos_.push_back(info);
         }
@@ -267,11 +255,10 @@ ZDCQIE10Reconstructor::fillDescriptions(edm::ConfigurationDescriptions& descript
     edm::ParameterSetDescription desc;
 
     desc.add<edm::InputTag>("digiLabel");
-    desc.add<int>("forceSOI", -1);
-    desc.add<int>("soiShift", 0);
+    desc.add<int>("tsToStart", 4);
+    desc.add<double>("satCorrFactor", 1.);
     desc.add<bool>("dropZSmarkedPassed");
     desc.add<bool>("tsFromDB");
-    desc.add<bool>("sumAllTimeSlices");
 
     descriptions.addDefault(desc);
 }
