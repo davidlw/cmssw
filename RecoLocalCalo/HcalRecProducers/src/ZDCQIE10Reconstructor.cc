@@ -11,8 +11,7 @@
      [Notes on implementation]
 */
 //
-// Original Author:  Igor Volobouev
-//         Created:  Thu, 05 May 2016 00:17:51 GMT
+// Original Author:  Wei Li 
 //
 //
 
@@ -55,7 +54,7 @@ public:
 
 private:
     typedef std::pair<HcalDetId,int> PmtAnodeId;
-    typedef std::pair<PmtAnodeId,const HFQIE10Info*> QIE10InfoWithId;
+    typedef std::pair<PmtAnodeId,const ZDCQIE10Info*> QIE10InfoWithId;
 
     void beginRun(const edm::Run&, const edm::EventSetup&) override;
     void produce(edm::Event&, const edm::EventSetup&) override;
@@ -69,8 +68,8 @@ private:
 
     // Other members
     ZDCQIE10RecAlgo reco_;
-    edm::EDGetTokenT<QIE10DigiCollection> tok_hfQIE10_;
-    std::vector<HFQIE10Info> qie10Infos_;
+    edm::EDGetTokenT<QIE10DigiCollection> tok_zdcQIE10_;
+    std::vector<ZDCQIE10Info> qie10Infos_;
     std::vector<QIE10InfoWithId> sortedQIE10Infos_;
     std::unique_ptr<HcalRecoParams> paramTS_;
 
@@ -93,10 +92,10 @@ ZDCQIE10Reconstructor::ZDCQIE10Reconstructor(const edm::ParameterSet& conf)
       reco_(conf.getParameter<bool>("sumAllTimeSlices"))
 {
     // Describe consumed data
-    tok_hfQIE10_ = consumes<QIE10DigiCollection>(inputLabel_);
+    tok_zdcQIE10_ = consumes<QIE10DigiCollection>(inputLabel_);
 
     // Register the product
-    produces<HFPreRecHitCollection>();
+    produces<ZDCQIE10RecHitCollection>();
 }
 
 
@@ -122,7 +121,7 @@ ZDCQIE10Reconstructor::sortDataByPmt()
     {
         // Perform sorting
         sortedQIE10Infos_.reserve(sz);
-        const HFQIE10Info* info = &qie10Infos_[0];
+        const ZDCQIE10Info* info = &qie10Infos_[0];
         for (unsigned i=0; i<sz; ++i)
         {
             const HcalDetId id(info[i].id());
@@ -168,12 +167,12 @@ ZDCQIE10Reconstructor::fillInfos(const edm::Event& e, const edm::EventSetup& eve
 
     // Get the input collection
     Handle<QIE10DigiCollection> digi;
-    e.getByToken(tok_hfQIE10_, digi);
+    e.getByToken(tok_zdcQIE10_, digi);
 
     const unsigned inputSize = digi->size();
     if (inputSize)
     {
-        // Process the digis and fill out the HFQIE10Info vector
+        // Process the digis and fill out the ZDCQIE10Info vector
         qie10Infos_.reserve(inputSize);
 
         for (QIE10DigiCollection::const_iterator it = digi->begin();
@@ -212,7 +211,7 @@ ZDCQIE10Reconstructor::fillInfos(const edm::Event& e, const edm::EventSetup& eve
             }
 
             // Reconstruct the charge, energy, etc
-            const HFQIE10Info& info = reco_.reconstruct(frame, tsToUse+soiShift_, coder, calibrations);
+            const ZDCQIE10Info& info = reco_.reconstruct(frame, tsToUse+soiShift_, coder, calibrations);
             if (info.id().rawId())
                 qie10Infos_.push_back(info);
         }
@@ -239,7 +238,7 @@ ZDCQIE10Reconstructor::produce(edm::Event& e, const edm::EventSetup& eventSetup)
     fillInfos(e, eventSetup);
 
     // Create a new output collection
-    std::unique_ptr<HFPreRecHitCollection> out(std::make_unique<HFPreRecHitCollection>());
+    std::unique_ptr<ZDCQIE10RecHitCollection> out(std::make_unique<ZDCQIE10RecHitCollection>());
 
     // Fill the output collection
     const unsigned pmtCount = sortDataByPmt();
@@ -248,50 +247,10 @@ std::cout<<"pmtCount="<<pmtCount<<std::endl;
     {
         out->reserve(pmtCount);
         const unsigned sz = sortedQIE10Infos_.size();
-        HcalDetId previousBaseId(sortedQIE10Infos_[0].first.first);
-        unsigned nFound = 1;
         for (unsigned i=1; i<=sz; ++i)
         {
-            bool appendData = i == sz;
-            if (i < sz)
-            {
-                const HcalDetId baseId(sortedQIE10Infos_[i].first.first);
-                if (baseId == previousBaseId)
-                    ++nFound;
-                else
-                {
-                    appendData = true;
-                    previousBaseId = baseId;
-                }
-            }
-std::cout<<"nFound="<<nFound<<std::endl;
-            if (appendData)
-            {
-                // If we have found more than two QIE10 with the same base id,
-                // there is a bug somewhere in the dataframe. We can't do
-                // anything useful about it here. Once we make sure that
-                // everything works as expected, this assertion can be removed.
-                assert(nFound <= 2);
-
-                const HFQIE10Info* first = nullptr;
-                const HFQIE10Info* second = sortedQIE10Infos_[i-1].second;
-
-                if (nFound >= 2)
-                    first = sortedQIE10Infos_[i-2].second;
-                else if (sortedQIE10Infos_[i-1].first.second < 3)
-                {
-                    // Only one QIE10 readout found for this PMT.
-                    // Arrange for depth 1 and 2 to be "first".
-                    first = second;
-                    second = nullptr;
-                }
-
-                out->push_back(HFPreRecHit(sortedQIE10Infos_[i-nFound].first.first,
-                                           first, second));
-
-                // Reset the QIE find count for this base id
-                nFound = 1;
-            }
+          out->push_back(ZDCQIE10RecHit(sortedQIE10Infos_[i-1].first.first,
+                                        sortedQIE10Infos_[i-1].second));
         }
 
         assert(out->size() == pmtCount);

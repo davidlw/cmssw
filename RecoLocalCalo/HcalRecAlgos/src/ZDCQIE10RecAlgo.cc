@@ -9,7 +9,7 @@
 #include "CalibFormats/CaloObjects/interface/CaloSamples.h"
 #include "CalibFormats/HcalObjects/interface/HcalCalibrations.h"
 
-HFQIE10Info ZDCQIE10RecAlgo::reconstruct(const QIE10DataFrame& digi,
+ZDCQIE10Info ZDCQIE10RecAlgo::reconstruct(const QIE10DataFrame& digi,
                                       const int tsToUse,
                                       const HcalCoder& coder,
                                       const HcalCalibrations& calib) const
@@ -19,20 +19,20 @@ HFQIE10Info ZDCQIE10RecAlgo::reconstruct(const QIE10DataFrame& digi,
     // output becomes available
     static const float timeFalling = HcalSpecialTimes::UNKNOWN_T_NOTDC;
 
-    HFQIE10Info result;
+    ZDCQIE10Info result;
 
     CaloSamples cs;
     coder.adc2fC(digi, cs);
     const int nRead = cs.size();
 
-    // Number of raw samples to store in HFQIE10Info
-    const int nStore = std::min(nRead, static_cast<int>(HFQIE10Info::N_RAW_MAX));
+    // Number of raw samples to store in ZDCQIE10Info
+    const int nStore = std::min(nRead, static_cast<int>(ZDCQIE10Info::N_RAW_MAX));
 
     if (sumAllTS_)
     {
         // This branch is intended for use with cosmic runs
         double charge = 0.0, energy = 0.0;
-        HFQIE10Info::raw_type raw[HFQIE10Info::N_RAW_MAX];
+        ZDCQIE10Info::raw_type raw[ZDCQIE10Info::N_RAW_MAX];
 
         for (int ts=0; ts<nRead; ++ts)
         {
@@ -48,10 +48,10 @@ HFQIE10Info ZDCQIE10RecAlgo::reconstruct(const QIE10DataFrame& digi,
         // Timing measurement does not appear to be useful here
         const float timeRising = HcalSpecialTimes::UNKNOWN_T_NOTDC;
 
-        // The following HFQIE10Info arguments correspond to SOI
+        // The following ZDCQIE10Info arguments correspond to SOI
         // not stored in the raw data. Essentially, only charge
         // and energy are meaningful.
-        result = HFQIE10Info(digi.id(), charge, energy,
+        result = ZDCQIE10Info(digi.id(), charge, energy,
                              timeRising, timeFalling,
                              raw, nStore, nStore);
     }
@@ -68,7 +68,7 @@ HFQIE10Info ZDCQIE10RecAlgo::reconstruct(const QIE10DataFrame& digi,
         // have the width given by "nStore" and
         // will start at "shift".
         int shift = 0;
-        if (nRead > static_cast<int>(HFQIE10Info::N_RAW_MAX))
+        if (nRead > static_cast<int>(ZDCQIE10Info::N_RAW_MAX))
         {
             // Try to center the window on "tsToUse"
             const int winCenter = nStore/2;
@@ -79,11 +79,11 @@ HFQIE10Info ZDCQIE10RecAlgo::reconstruct(const QIE10DataFrame& digi,
         }
 
         // Fill an array of raw values
-        HFQIE10Info::raw_type raw[HFQIE10Info::N_RAW_MAX];
+        ZDCQIE10Info::raw_type raw[ZDCQIE10Info::N_RAW_MAX];
         for (int i=0; i<nStore; ++i)
             raw[i] = digi[i + shift].wideRaw();
 
-        result = HFQIE10Info(digi.id(), charge, energy,
+        result = ZDCQIE10Info(digi.id(), charge, energy,
                              timeRising, timeFalling,
                              raw, nStore, tsToUse - shift);
     }

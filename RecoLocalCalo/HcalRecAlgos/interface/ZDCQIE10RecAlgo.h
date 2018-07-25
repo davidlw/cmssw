@@ -1,7 +1,7 @@
 #ifndef RecoLocalCalo_HcalRecAlgos_ZDCQIE10RecAlgo_h_
 #define RecoLocalCalo_HcalRecAlgos_ZDCQIE10RecAlgo_h_
 
-#include "DataFormats/HcalRecHit/interface/HFQIE10Info.h"
+#include "DataFormats/HcalRecHit/interface/ZDCQIE10Info.h"
 
 class QIE10DataFrame;
 class HcalCoder;
@@ -14,7 +14,7 @@ public:
 
     inline ~ZDCQIE10RecAlgo() {}
 
-    HFQIE10Info reconstruct(const QIE10DataFrame& digi,
+    ZDCQIE10Info reconstruct(const QIE10DataFrame& digi,
                             int tsToUse,
                             const HcalCoder& coder,
                             const HcalCalibrations& calibs) const;
